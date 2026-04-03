@@ -1,0 +1,59 @@
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+
+const HeroSection = () => {
+  return (
+    <section className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1920&q=80&auto=format&fit=crop"
+          alt="Modern dental care"
+          className="w-full h-full object-cover"
+          loading="eager"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-navy/70 via-navy/50 to-navy/80" />
+      </div>
+
+      {/* Content */}
+      <div className="relative container text-center px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="max-w-3xl mx-auto"
+        >
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight text-balance">
+            Confident Smiles Start with{" "}
+            <span className="text-primary">Exceptional Care</span>
+          </h1>
+
+          <p className="mt-6 text-lg sm:text-xl text-white/85 max-w-2xl mx-auto text-balance">
+            General dentistry, cosmetic treatments, and emergency care —
+            delivered with precision in a calm, modern setting.
+          </p>
+
+          <p className="mt-3 text-sm text-white/60 tracking-wide uppercase">
+            Comfortable, modern, and always patient-first
+          </p>
+
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button asChild size="lg" className="rounded-lg px-8 text-base min-h-[48px]">
+              <a href="#booking">Book Appointment</a>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="rounded-lg px-8 text-base min-h-[48px] border-white/30 text-white hover:bg-white/10 hover:text-white"
+            >
+              <a href="#services">View Our Services</a>
+            </Button>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default HeroSection;
