@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { useMotionReduced } from "@/lib/motionReduced";
 
 const HeroSection = () => {
+  const { instant, reduceMotion } = useMotionReduced();
   return (
     <section className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden">
       {/* Background */}
@@ -18,9 +20,13 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative container text-center px-4">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={instant ? false : { opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : { duration: 0.8, ease: "easeOut" }
+          }
           className="max-w-3xl mx-auto"
         >
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight text-balance">
@@ -45,7 +51,7 @@ const HeroSection = () => {
               asChild
               variant="outline"
               size="lg"
-              className="rounded-lg px-8 text-base min-h-[48px] border-white/30 text-white hover:bg-white/10 hover:text-white"
+              className="rounded-lg px-8 text-base min-h-[48px] border-white/50 bg-transparent text-white shadow-sm hover:bg-white/15 hover:text-white"
             >
               <a href="#services">View Our Services</a>
             </Button>

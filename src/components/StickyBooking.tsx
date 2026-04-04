@@ -1,6 +1,7 @@
 import { Phone, CalendarCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { CONTACT_TEL_HREF } from "@/lib/siteContact";
 
 const StickyBooking = () => {
   const [visible, setVisible] = useState(false);
@@ -31,7 +32,7 @@ const StickyBooking = () => {
           <a href="#booking">Book Appointment</a>
         </Button>
         <a
-          href="tel:+XXX-XXXX-XXXX"
+          href={CONTACT_TEL_HREF}
           className="flex items-center justify-center w-11 h-11 rounded-lg border border-border bg-card text-primary"
           aria-label="Call us"
         >

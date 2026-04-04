@@ -1,5 +1,6 @@
 import { Sofa, Heart, Cpu, UserCheck } from "lucide-react";
 import { motion } from "framer-motion";
+import { useMotionReduced } from "@/lib/motionReduced";
 
 const features = [
   {
@@ -25,6 +26,7 @@ const features = [
 ];
 
 const PatientExperienceSection = () => {
+  const { instant, reduceMotion } = useMotionReduced();
   return (
     <section className="py-20 md:py-28 bg-surface">
       <div className="container">
@@ -41,10 +43,10 @@ const PatientExperienceSection = () => {
           {features.map((f, i) => (
             <motion.div
               key={f.title}
-              initial={{ opacity: 0, y: 20 }}
+              initial={instant ? false : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              transition={reduceMotion ? { duration: 0 } : { delay: i * 0.1 }}
               className="text-center"
             >
               <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">

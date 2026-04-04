@@ -1,5 +1,7 @@
-import { MapPin, Clock, CreditCard, CalendarCheck, Mail, Phone } from "lucide-react";
+import { MapPin, Clock, CreditCard, Mail, Phone } from "lucide-react";
 import { motion } from "framer-motion";
+import { useMotionReduced } from "@/lib/motionReduced";
+import { CONTACT, CONTACT_MAILTO_HREF, CONTACT_TEL_HREF, CONTACT_MAPS_URL } from "@/lib/siteContact";
 
 const hours = [
   { day: "Monday – Friday", time: "9:00 AM – 7:00 PM" },
@@ -21,6 +23,7 @@ const steps = [
 ];
 
 const LogisticsSection = () => {
+  const { instant, reduceMotion } = useMotionReduced();
   return (
     <section id="contact" className="py-20 md:py-28">
       <div className="container">
@@ -36,15 +39,24 @@ const LogisticsSection = () => {
         <div className="grid md:grid-cols-2 gap-8 mb-14">
           {/* Map placeholder */}
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={instant ? false : { opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="rounded-xl overflow-hidden border border-border shadow-sm bg-muted min-h-[280px] flex items-center justify-center"
+            transition={reduceMotion ? { duration: 0 } : undefined}
+            className="rounded-xl overflow-hidden border border-border shadow-sm bg-muted min-h-[280px] flex items-center justify-center p-6"
           >
-            <div className="text-center">
+            <div className="text-center max-w-sm">
               <MapPin className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground text-sm font-medium">City, Country</p>
-              <p className="text-xs text-muted-foreground mt-1">Google Maps placeholder</p>
+              <p className="text-foreground text-sm font-semibold">{CONTACT.cityRegion}</p>
+              <p className="text-muted-foreground text-sm mt-2 leading-relaxed">{CONTACT.fullAddress}</p>
+              <a
+                href={CONTACT_MAPS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-4 text-sm font-medium text-primary hover:underline"
+              >
+                Open in Google Maps
+              </a>
             </div>
           </motion.div>
 
@@ -70,11 +82,11 @@ const LogisticsSection = () => {
             <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
               <h3 className="font-semibold text-foreground mb-3">Contact</h3>
               <div className="space-y-2 text-sm">
-                <a href="tel:+XXX-XXXX-XXXX" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
-                  <Phone className="w-4 h-4" /> +XXX-XXXX-XXXX
+                <a href={CONTACT_TEL_HREF} className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+                  <Phone className="w-4 h-4" /> {CONTACT.phoneDisplay}
                 </a>
-                <a href="mailto:hello@luminadental.com" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
-                  <Mail className="w-4 h-4" /> hello@luminadental.com
+                <a href={CONTACT_MAILTO_HREF} className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+                  <Mail className="w-4 h-4" /> {CONTACT.email}
                 </a>
               </div>
             </div>
@@ -99,10 +111,10 @@ const LogisticsSection = () => {
           {steps.map((s, i) => (
             <div key={s.step} className="flex items-center gap-4">
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
+                initial={instant ? false : { opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
+                transition={reduceMotion ? { duration: 0 } : { delay: i * 0.15 }}
                 className="flex flex-col items-center"
               >
                 <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-lg font-bold">

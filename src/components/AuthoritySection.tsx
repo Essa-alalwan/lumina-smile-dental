@@ -1,5 +1,6 @@
 import { Users, Award, ThumbsUp, Monitor, ScanLine, Syringe, Eye } from "lucide-react";
 import { motion } from "framer-motion";
+import { useMotionReduced } from "@/lib/motionReduced";
 
 const stats = [
   { icon: Users, value: "500+", label: "Patients Treated" },
@@ -15,6 +16,7 @@ const tech = [
 ];
 
 const AuthoritySection = () => {
+  const { instant, reduceMotion } = useMotionReduced();
   return (
     <section id="about" className="py-20 md:py-28 bg-surface">
       <div className="container">
@@ -30,9 +32,10 @@ const AuthoritySection = () => {
         {/* Doctor profile + Clinic photo */}
         <div className="grid md:grid-cols-2 gap-8 mb-16">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={instant ? false : { opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
+            transition={reduceMotion ? { duration: 0 } : undefined}
             className="bg-card rounded-xl border border-border p-8 shadow-sm"
           >
             <div className="flex items-start gap-5">
@@ -59,9 +62,10 @@ const AuthoritySection = () => {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={instant ? false : { opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
+            transition={reduceMotion ? { duration: 0 } : undefined}
             className="rounded-xl overflow-hidden shadow-sm"
           >
             <img
@@ -78,10 +82,10 @@ const AuthoritySection = () => {
           {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
+              initial={instant ? false : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              transition={reduceMotion ? { duration: 0 } : { delay: i * 0.1 }}
               className="bg-card rounded-xl border border-border p-6 text-center shadow-sm"
             >
               <stat.icon className="w-6 h-6 text-primary mx-auto mb-3" />

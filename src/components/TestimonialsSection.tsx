@@ -1,6 +1,7 @@
 import { Star } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useMotionReduced } from "@/lib/motionReduced";
 
 const testimonials = [
   {
@@ -27,6 +28,7 @@ const testimonials = [
 
 const TestimonialsSection = () => {
   const [showTransformations, setShowTransformations] = useState(false);
+  const { instant, reduceMotion } = useMotionReduced();
 
   return (
     <section id="testimonials" className="py-20 md:py-28">
@@ -45,10 +47,10 @@ const TestimonialsSection = () => {
           {testimonials.map((t, i) => (
             <motion.div
               key={t.name}
-              initial={{ opacity: 0, y: 20 }}
+              initial={instant ? false : { opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              transition={reduceMotion ? { duration: 0 } : { delay: i * 0.1 }}
               className="bg-card rounded-xl border border-border p-6 shadow-sm flex flex-col"
             >
               <div className="flex gap-0.5 mb-4">
@@ -78,8 +80,9 @@ const TestimonialsSection = () => {
 
           {showTransformations && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
+              initial={instant ? false : { opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
+              transition={reduceMotion ? { duration: 0 } : undefined}
               className="mt-8 grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto"
             >
               {[1, 2].map((n) => (

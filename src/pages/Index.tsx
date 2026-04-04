@@ -12,16 +12,30 @@ import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen">
-      <Navbar />
-      <HeroSection />
-      <BookingSection />
-      <ServicesSection />
-      <AuthoritySection />
-      <TestimonialsSection />
-      <PatientExperienceSection />
-      <LogisticsSection />
-      <FinalCTASection />
+    <div id="top" className="min-h-screen">
+      <a
+        href="#main-content"
+        className="skip-link"
+      >
+        Skip to main content
+      </a>
+      <header>
+        <Navbar />
+      </header>
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="outline-none scroll-mt-20 md:scroll-mt-24 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+      >
+        <HeroSection />
+        <BookingSection />
+        <ServicesSection />
+        <AuthoritySection />
+        <TestimonialsSection />
+        <PatientExperienceSection />
+        <LogisticsSection />
+        <FinalCTASection />
+      </main>
       <Footer />
       <StickyBooking />
     </div>

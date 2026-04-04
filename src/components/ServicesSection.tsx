@@ -2,6 +2,7 @@ import {
   Sparkles, Smile, ShieldCheck, Scan, Sun, Palette, Zap,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useMotionReduced } from "@/lib/motionReduced";
 
 interface ServiceCard {
   icon: React.ElementType;
@@ -26,13 +27,19 @@ const emergencyServices: ServiceCard[] = [
   { icon: Zap, name: "Urgent Dental Care", description: "Same-day appointments for pain, trauma, or urgent needs" },
 ];
 
-const ServiceCardComponent = ({ service, index }: { service: ServiceCard; index: number }) => (
+const ServiceCardComponent = ({ service, index }: { service: ServiceCard; index: number }) => {
+  const { instant, reduceMotion } = useMotionReduced();
+  return (
   <motion.div
-    initial={{ opacity: 0, y: 20 }}
+    initial={instant ? false : { opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
-    transition={{ delay: index * 0.08, duration: 0.5 }}
-    className={`group bg-card rounded-xl border p-6 shadow-sm hover:shadow-md transition-all ${
+    transition={
+      reduceMotion
+        ? { duration: 0 }
+        : { delay: index * 0.08, duration: 0.5 }
+    }
+    className={`group bg-card rounded-xl border p-6 shadow-sm hover:shadow-md transition-all motion-reduce:transition-none ${
       service.gold
         ? "border-gold/40 hover:border-gold"
         : "border-border hover:border-primary/30"
@@ -53,10 +60,11 @@ const ServiceCardComponent = ({ service, index }: { service: ServiceCard; index:
         service.gold ? "text-accent hover:text-accent/80" : "text-primary hover:text-primary/80"
       }`}
     >
-      Learn More →
+      Book this service →
     </a>
   </motion.div>
-);
+  );
+};
 
 const ServicesSection = () => {
   return (

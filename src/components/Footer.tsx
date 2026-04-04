@@ -1,3 +1,5 @@
+import { CONTACT } from "@/lib/siteContact";
+
 const Footer = () => {
   return (
     <footer className="py-10 border-t border-border bg-card">
@@ -6,7 +8,7 @@ const Footer = () => {
           © {new Date().getFullYear()} Lumina Dental. All rights reserved.
         </p>
         <p className="text-xs text-muted-foreground mt-1">
-          City, Country · +XXX-XXXX-XXXX
+          {CONTACT.cityRegion} · {CONTACT.phoneDisplay}
         </p>
       </div>
     </footer>
