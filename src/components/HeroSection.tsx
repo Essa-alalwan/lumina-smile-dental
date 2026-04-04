@@ -13,8 +13,10 @@ const HeroSection = () => {
           alt="Modern dental care"
           className="w-full h-full object-cover"
           loading="eager"
+          // @ts-ignore - fetchpriority is supported in modern browsers but might not be in all TS types
+          fetchpriority="high"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-navy/70 via-navy/50 to-navy/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-navy-dark/70 via-navy-dark/50 to-navy-dark/80" />
       </div>
 
       {/* Content */}

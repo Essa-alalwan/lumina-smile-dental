@@ -1,7 +1,9 @@
-import { MapPin, Clock, CreditCard, Mail, Phone } from "lucide-react";
+import { useState } from "react";
+import { MapPin, Clock, CreditCard, Mail, Phone, Copy, Check, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { useMotionReduced } from "@/lib/motionReduced";
 import { CONTACT, CONTACT_MAILTO_HREF, CONTACT_TEL_HREF, CONTACT_MAPS_URL } from "@/lib/siteContact";
+import { Button } from "@/components/ui/button";
 
 const hours = [
   { day: "Monday – Friday", time: "9:00 AM – 7:00 PM" },
@@ -24,6 +26,19 @@ const steps = [
 
 const LogisticsSection = () => {
   const { instant, reduceMotion } = useMotionReduced();
+  const [copied, setCopied] = useState(false);
+
+  const copyAddress = () => {
+    navigator.clipboard.writeText(CONTACT.fullAddress);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Google Maps Embed URL using the free search-based iframe
+  const mapEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(
+    CONTACT.fullAddress
+  )}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+
   return (
     <section id="contact" className="py-20 md:py-28">
       <div className="container">
@@ -32,31 +47,49 @@ const LogisticsSection = () => {
             Visit Us
           </h2>
           <p className="mt-3 text-muted-foreground max-w-lg mx-auto">
-            Everything you need to know before your appointment.
+            Our clinic is centrally located and easy to find.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 mb-14">
-          {/* Map placeholder */}
+          {/* Interactive Map */}
           <motion.div
-            initial={instant ? false : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+            initial={instant ? false : { opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={reduceMotion ? { duration: 0 } : undefined}
-            className="rounded-xl overflow-hidden border border-border shadow-sm bg-muted min-h-[280px] flex items-center justify-center p-6"
+            className="rounded-xl overflow-hidden border border-border shadow-sm bg-muted min-h-[350px] relative group"
           >
-            <div className="text-center max-w-sm">
-              <MapPin className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-              <p className="text-foreground text-sm font-semibold">{CONTACT.cityRegion}</p>
-              <p className="text-muted-foreground text-sm mt-2 leading-relaxed">{CONTACT.fullAddress}</p>
-              <a
-                href={CONTACT_MAPS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-4 text-sm font-medium text-primary hover:underline"
+            <iframe
+              title="Clinic Location"
+              width="100%"
+              height="100%"
+              style={{ border: 0, filter: "grayscale(0.2) contrast(1.1) opacity(0.85)" }}
+              src={mapEmbedUrl}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="absolute inset-0 grayscale-[0.2] group-hover:grayscale-0 transition-all duration-500"
+            ></iframe>
+            
+            {/* View on Maps Overlay/Button */}
+            <div className="absolute bottom-4 right-4 z-10">
+              <Button
+                asChild
+                variant="secondary"
+                size="sm"
+                className="shadow-md bg-card/90 backdrop-blur hover:bg-card"
               >
-                Open in Google Maps
-              </a>
+                <a
+                  href={CONTACT_MAPS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Full View
+                </a>
+              </Button>
             </div>
           </motion.div>
 
@@ -67,7 +100,7 @@ const LogisticsSection = () => {
                 <Clock className="w-5 h-5 text-primary" />
                 <h3 className="font-semibold text-foreground">Working Hours</h3>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {hours.map((h) => (
                   <div key={h.day} className="flex justify-between text-sm">
                     <span className="text-foreground">{h.day}</span>
@@ -80,14 +113,49 @@ const LogisticsSection = () => {
             </div>
 
             <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
-              <h3 className="font-semibold text-foreground mb-3">Contact</h3>
-              <div className="space-y-2 text-sm">
-                <a href={CONTACT_TEL_HREF} className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
-                  <Phone className="w-4 h-4" /> {CONTACT.phoneDisplay}
-                </a>
-                <a href={CONTACT_MAILTO_HREF} className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
-                  <Mail className="w-4 h-4" /> {CONTACT.email}
-                </a>
+              <h3 className="font-semibold text-foreground mb-4">Contact & Location</h3>
+              <div className="space-y-4">
+                {/* Address block with Copy */}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 p-2 bg-primary/10 rounded-lg">
+                    <MapPin className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground">{CONTACT.cityRegion}</p>
+                    <p className="text-sm text-muted-foreground mt-0.5 leading-relaxed">
+                      {CONTACT.fullAddress}
+                    </p>
+                    <button
+                      onClick={copyAddress}
+                      className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="w-3 h-3" /> Copied
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3 h-3" /> Copy Address
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="pt-2 space-y-3 border-t border-border/50">
+                  <a href={CONTACT_TEL_HREF} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors group">
+                    <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 transition-colors">
+                      <Phone className="w-4 h-4" />
+                    </div>
+                    {CONTACT.phoneDisplay}
+                  </a>
+                  <a href={CONTACT_MAILTO_HREF} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors group">
+                    <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 transition-colors">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    {CONTACT.email}
+                  </a>
+                </div>
               </div>
             </div>
           </div>

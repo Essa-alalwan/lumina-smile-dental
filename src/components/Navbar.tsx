@@ -3,6 +3,7 @@ import { useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "./ModeToggle";
 import { CONTACT, CONTACT_TEL_HREF } from "@/lib/siteContact";
 
 const MOBILE_NAV_PANEL_ID = "mobile-nav-panel";
@@ -127,6 +128,7 @@ const Navbar = () => {
             <Phone className="w-4 h-4" />
             {CONTACT.phoneDisplay}
           </a>
+          <ModeToggle scrolled={scrolled} />
           <Button asChild size="sm" className="rounded-lg px-6">
             <a href="#booking">Book Appointment</a>
           </Button>
@@ -179,6 +181,10 @@ const Navbar = () => {
               <Phone className="w-4 h-4" />
               {CONTACT.phoneDisplay}
             </a>
+            <div className="flex items-center justify-between py-2 border-t border-border/50 mt-1">
+              <span className="text-sm font-medium text-muted-foreground">Theme</span>
+              <ModeToggle scrolled={true} />
+            </div>
             <Button asChild className="mt-2 rounded-lg">
               <a href="#booking" onClick={closeMobile}>
                 Book Appointment

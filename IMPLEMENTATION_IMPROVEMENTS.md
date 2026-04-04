@@ -92,18 +92,18 @@ This document turns the agreed frontend improvement suggestions into **actionabl
   **Verify:** With OS “Reduce motion” on, hero and section animations are minimal or static.
 
 ---
-
 ## 4. Layout — sticky bar and safe areas
+
 
 **Goal:** Prevent the fixed mobile CTA from obscuring footer content and respect notched devices.
 
 ### Tasks
 
-- [ ] **4.1 — Bottom padding when sticky is visible**  
+- [x] **4.1 — Bottom padding when sticky is visible**  
   When the mobile sticky bar is shown, add sufficient `padding-bottom` on the scrollable page (or body) so the last sections remain readable above the bar.  
   **Verify:** Scroll to footer on a phone-sized viewport; no text or buttons hidden behind the bar.
 
-- [ ] **4.2 — Safe area insets**  
+- [x] **4.2 — Safe area insets**  
   Use `env(safe-area-inset-bottom)` (and related) on the sticky container or page padding for notched devices.  
   **Verify:** In device simulator or real device, content clears the home indicator.
 
@@ -115,11 +115,11 @@ This document turns the agreed frontend improvement suggestions into **actionabl
 
 ### Tasks
 
-- [ ] **5.1 — Choose map presentation**  
+- [x] **5.1 — Choose map presentation**  
   Pick one: static image + “Open in Maps” link, embedded map iframe (if allowed by provider and privacy policy), or external link only.  
   **Verify:** Click opens correct location in maps app or browser.
 
-- [ ] **5.2 — Align address copy**  
+- [x] **5.2 — Align address copy**  
   Ensure map link, visible address, and Section 1 constants all match.
 
 ---
@@ -130,19 +130,19 @@ This document turns the agreed frontend improvement suggestions into **actionabl
 
 ### Tasks
 
-- [ ] **6.1 — Font loading strategy**  
+- [x] **6.1 — Font loading strategy**  
   Move off blocking `@import` if needed: use `preconnect` to Google Fonts and/or self-host WOFF2 with `font-display: swap`.  
   **Verify:** Lighthouse or Network panel shows improved font chain; no FOIT where avoidable.
 
-- [ ] **6.2 — Hero image optimization**  
+- [x] **6.2 — Hero image optimization**  
   Provide responsive sources (`srcSet`/`sizes`) or a single compressed asset; keep LCP image `fetchpriority` high / `loading` appropriate for hero.  
   **Verify:** LCP image size drops on mobile; no layout shift from image load.
 
-- [ ] **6.3 — Lazy-load non-critical images**  
+- [x] **6.3 — Lazy-load non-critical images**  
   Use `loading="lazy"` for below-the-fold images.  
   **Verify:** Hero stays eager; lower images defer.
 
-- [ ] **6.4 — Optional: remove unused client deps**  
+- [x] **6.4 — Optional: remove unused client deps**  
   If TanStack Query is unused after audit, remove provider and dependency to reduce bundle (only after confirming no `useQuery` usage).  
   **Verify:** Build succeeds; bundle size reduced.
 
@@ -154,13 +154,14 @@ This document turns the agreed frontend improvement suggestions into **actionabl
 
 ### Tasks
 
-- [ ] **7.1 — 404 logging**  
+- [x] **7.1 — 404 logging**  
   Gate `console.error` in `NotFound` behind `import.meta.env.DEV` or remove it.  
   **Verify:** Production build does not log 404s to console on normal navigation.
 
-- [ ] **7.2 — 404 UX**  
+- [x] **7.2 — 404 UX**  
   Optionally use `<Link to="/">` from react-router for SPA navigation instead of full page `<a href="/">`.  
   **Verify:** 404 → home navigation is instant and accessible.
+
 
 ---
 
@@ -170,10 +171,10 @@ This document turns the agreed frontend improvement suggestions into **actionabl
 
 ### Tasks
 
-- [ ] **8.1 — Product decision**  
+- [x] **8.1 — Product decision**  
   Choose: **A)** Add theme toggle (e.g. `next-themes` already in dependencies) and persist preference, or **B)** stay light-only and document that dark tokens are unused for now.
 
-- [ ] **8.2 — Implement chosen option**  
+- [x] **8.2 — Implement chosen option**  
   If **A:** wire toggle, test all sections in dark mode. If **B:** no UI change; optionally trim unused `.dark` documentation comments only (do not break future theming unless intentional).
 
 ---
@@ -187,10 +188,10 @@ Use this before merging or releasing:
 - [ ] Booking flow: same day selection on mobile and desktop; labels and service select work.
 - [ ] Skip link + main landmark; mobile menu keyboard and Escape behavior OK.
 - [ ] Sticky mobile bar does not cover footer; safe areas respected.
-- [ ] Map/location block is useful and accurate.
-- [ ] Fonts and hero image load efficiently; lazy below-fold images.
-- [ ] 404 page does not spam production console.
-- [ ] Dark mode decision implemented consistently.
+- [x] Map/location block is useful and accurate.
+- [x] Fonts and hero image load efficiently; lazy below-fold images.
+- [x] 404 page does not spam production console.
+- [x] Dark mode decision implemented consistently.
 
 ---
 

@@ -52,6 +52,7 @@ export default {
         },
         surface: "hsl(var(--surface))",
         navy: "hsl(var(--navy))",
+        "navy-dark": "hsl(var(--navy-dark))",
         gold: {
           DEFAULT: "hsl(var(--gold))",
           light: "hsl(var(--gold-light))",
