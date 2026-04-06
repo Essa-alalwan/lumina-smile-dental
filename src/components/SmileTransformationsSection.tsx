@@ -39,6 +39,7 @@ interface SliderCardProps {
   after: string;
   label: string;
   note: string;
+  emotion: string;
 }
 
 const SliderCard = ({ before, after, label, note }: SliderCardProps) => {
