@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useMotionReduced } from "@/lib/motionReduced";
+import { Button } from "@/components/ui/button";
 
 import beforeVeneers from "@/assets/before-veneers.jpg";
 import afterVeneers from "@/assets/after-veneers.jpg";
@@ -13,18 +14,21 @@ const transformations = [
   {
     label: "Porcelain Veneers",
     note: "8 veneers, completed in 2 visits",
+    emotion: "Regain confidence in your smile",
     before: beforeVeneers,
     after: afterVeneers,
   },
   {
     label: "Professional Whitening",
     note: "6 shades brighter in a single session",
+    emotion: "Smile without holding back",
     before: beforeWhitening,
     after: afterWhitening,
   },
   {
     label: "Smile Design",
     note: "Full digital smile makeover plan",
+    emotion: "Love the way you look again",
     before: beforeSmileDesign,
     after: afterSmileDesign,
   },
