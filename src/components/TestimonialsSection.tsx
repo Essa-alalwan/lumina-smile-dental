@@ -1,5 +1,4 @@
 import { Star } from "lucide-react";
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { useMotionReduced } from "@/lib/motionReduced";
 
@@ -27,7 +26,6 @@ const testimonials = [
 ];
 
 const TestimonialsSection = () => {
-  const [showTransformations, setShowTransformations] = useState(false);
   const { instant, reduceMotion } = useMotionReduced();
 
   return (
@@ -69,45 +67,6 @@ const TestimonialsSection = () => {
           ))}
         </div>
 
-        {/* Smile Transformations */}
-        <div className="text-center">
-          <button
-            onClick={() => setShowTransformations(!showTransformations)}
-            className="inline-flex items-center gap-2 text-primary font-medium hover:text-primary/80 transition-colors text-sm"
-          >
-            {showTransformations ? "Hide" : "View"} Smile Transformations
-          </button>
-
-          {showTransformations && (
-            <motion.div
-              initial={instant ? false : { opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              transition={reduceMotion ? { duration: 0 } : undefined}
-              className="mt-8 grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto"
-            >
-              {[1, 2].map((n) => (
-                <div key={n} className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
-                  <div className="grid grid-cols-2">
-                    <div className="bg-muted aspect-[4/3] flex items-center justify-center">
-                      <span className="text-xs text-muted-foreground font-medium">Before</span>
-                    </div>
-                    <div className="bg-primary/5 aspect-[4/3] flex items-center justify-center">
-                      <span className="text-xs text-primary font-medium">After</span>
-                    </div>
-                  </div>
-                  <div className="p-4 text-center">
-                    <p className="text-sm font-medium text-foreground">
-                      {n === 1 ? "Veneer Transformation" : "Whitening Treatment"}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Illustrative placeholder — actual results may vary
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          )}
-        </div>
       </div>
     </section>
   );
