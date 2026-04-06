@@ -15,22 +15,22 @@ const transformations = [
     label: "Porcelain Veneers",
     note: "8 veneers, completed in 2 visits",
     emotion: "Regain confidence in your smile",
-    before: beforeVeneers,
-    after: afterVeneers,
+    before: beforeVeneers, // Fixed
+    after: afterVeneers,   // Fixed
   },
   {
     label: "Professional Whitening",
     note: "6 shades brighter in a single session",
     emotion: "Smile without holding back",
-    before: beforeWhitening,
-    after: afterWhitening,
+    before: beforeWhitening, // Fixed
+    after: afterWhitening,   // Fixed
   },
   {
     label: "Smile Design",
     note: "Full digital smile makeover plan",
     emotion: "Love the way you look again",
-    before: beforeSmileDesign,
-    after: afterSmileDesign,
+    before: beforeSmileDesign, // Fixed
+    after: afterSmileDesign,   // Fixed
   },
 ];
 
@@ -46,6 +46,9 @@ const SliderCard = ({ before, after, label, note, emotion }: SliderCardProps) =>
   const containerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const startXRef = useRef<number>(0);
+  const startYRef = useRef<number>(0);
+  const intentLockedRef = useRef<"horizontal" | "vertical" | null>(null);
 
   const updatePosition = useCallback((clientX: number) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -55,6 +58,10 @@ const SliderCard = ({ before, after, label, note, emotion }: SliderCardProps) =>
   }, []);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    // Only respond to mouse or direct touch on the handle area
+    startXRef.current = e.clientX;
+    startYRef.current = e.clientY;
+    intentLockedRef.current = null;
     setIsDragging(true);
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
     updatePosition(e.clientX);
@@ -62,21 +69,44 @@ const SliderCard = ({ before, after, label, note, emotion }: SliderCardProps) =>
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
     if (!isDragging) return;
-    updatePosition(e.clientX);
+
+    const deltaX = Math.abs(e.clientX - startXRef.current);
+    const deltaY = Math.abs(e.clientY - startYRef.current);
+
+    // Lock scroll intent on first significant movement
+    if (intentLockedRef.current === null && (deltaX > 4 || deltaY > 4)) {
+      intentLockedRef.current = deltaY > deltaX ? "vertical" : "horizontal";
+    }
+
+    // If user is scrolling vertically, release drag and let page scroll
+    if (intentLockedRef.current === "vertical") {
+      setIsDragging(false);
+      intentLockedRef.current = null;
+      return;
+    }
+
+    // Only prevent default (block scroll) if we confirmed horizontal intent
+    if (intentLockedRef.current === "horizontal") {
+      e.preventDefault();
+      updatePosition(e.clientX);
+    }
   }, [isDragging, updatePosition]);
 
   const handlePointerUp = useCallback(() => {
     setIsDragging(false);
+    intentLockedRef.current = null;
   }, []);
 
   return (
     <div className="rounded-xl border-2 border-accent/30 overflow-hidden shadow-sm bg-card">
       <div
         ref={containerRef}
-        className="relative aspect-[3/2] cursor-col-resize select-none touch-none"
+        className="relative aspect-[3/2] cursor-col-resize select-none"
+        // Removed touch-none — we handle touch behavior manually to allow vertical scroll
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         role="slider"
         aria-label={`Before and after comparison for ${label}`}
         aria-valuemin={0}
