@@ -2,24 +2,31 @@ import { useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useMotionReduced } from "@/lib/motionReduced";
 
+import beforeVeneers from "@/assets/before-veneers.jpg";
+import afterVeneers from "@/assets/after-veneers.jpg";
+import beforeWhitening from "@/assets/before-whitening.jpg";
+import afterWhitening from "@/assets/after-whitening.jpg";
+import beforeSmileDesign from "@/assets/before-smile-design.jpg";
+import afterSmileDesign from "@/assets/after-smile-design.jpg";
+
 const transformations = [
   {
     label: "Porcelain Veneers",
     note: "8 veneers, completed in 2 visits",
-    before: "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=600&h=400&fit=crop",
-    after: "https://images.unsplash.com/photo-1581585744487-ba7e5e4b6e7a?w=600&h=400&fit=crop",
+    before: beforeVeneers,
+    after: afterVeneers,
   },
   {
     label: "Professional Whitening",
     note: "6 shades brighter in a single session",
-    before: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&h=400&fit=crop",
-    after: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=400&fit=crop",
+    before: beforeWhitening,
+    after: afterWhitening,
   },
   {
     label: "Smile Design",
     note: "Full digital smile makeover plan",
-    before: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=600&h=400&fit=crop",
-    after: "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=600&h=400&fit=crop",
+    before: beforeSmileDesign,
+    after: afterSmileDesign,
   },
 ];
 
