@@ -42,7 +42,7 @@ interface SliderCardProps {
   emotion: string;
 }
 
-const SliderCard = ({ before, after, label, note }: SliderCardProps) => {
+const SliderCard = ({ before, after, label, note, emotion }: SliderCardProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
