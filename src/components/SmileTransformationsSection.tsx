@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useMotionReduced } from "@/lib/motionReduced";
+import { Button } from "@/components/ui/button";
 
 import beforeVeneers from "@/assets/before-veneers.jpg";
 import afterVeneers from "@/assets/after-veneers.jpg";
@@ -13,18 +14,21 @@ const transformations = [
   {
     label: "Porcelain Veneers",
     note: "8 veneers, completed in 2 visits",
+    emotion: "Regain confidence in your smile",
     before: beforeVeneers,
     after: afterVeneers,
   },
   {
     label: "Professional Whitening",
     note: "6 shades brighter in a single session",
+    emotion: "Smile without holding back",
     before: beforeWhitening,
     after: afterWhitening,
   },
   {
     label: "Smile Design",
     note: "Full digital smile makeover plan",
+    emotion: "Love the way you look again",
     before: beforeSmileDesign,
     after: afterSmileDesign,
   },
@@ -35,9 +39,10 @@ interface SliderCardProps {
   after: string;
   label: string;
   note: string;
+  emotion: string;
 }
 
-const SliderCard = ({ before, after, label, note }: SliderCardProps) => {
+const SliderCard = ({ before, after, label, note, emotion }: SliderCardProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
@@ -115,9 +120,17 @@ const SliderCard = ({ before, after, label, note }: SliderCardProps) => {
         <span className="absolute bottom-3 left-3 text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded">Before</span>
         <span className="absolute bottom-3 right-3 text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded">After</span>
       </div>
-      <div className="p-4 text-center">
+      <div className="p-4 text-center space-y-3">
         <p className="text-sm font-semibold text-foreground">{label}</p>
-        <p className="text-xs text-muted-foreground mt-1">{note}</p>
+        <p className="text-xs text-muted-foreground">{note}</p>
+        <p className="text-sm italic text-accent font-medium">"{emotion}"</p>
+        <Button
+          size="sm"
+          className="w-full"
+          onClick={() => document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })}
+        >
+          Get This Result
+        </Button>
       </div>
     </div>
   );
