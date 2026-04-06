@@ -26,7 +26,6 @@ const testimonials = [
 ];
 
 const TestimonialsSection = () => {
-  const [showTransformations, setShowTransformations] = useState(false);
   const { instant, reduceMotion } = useMotionReduced();
 
   return (
