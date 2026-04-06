@@ -120,9 +120,17 @@ const SliderCard = ({ before, after, label, note, emotion }: SliderCardProps) =>
         <span className="absolute bottom-3 left-3 text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded">Before</span>
         <span className="absolute bottom-3 right-3 text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded">After</span>
       </div>
-      <div className="p-4 text-center">
+      <div className="p-4 text-center space-y-3">
         <p className="text-sm font-semibold text-foreground">{label}</p>
-        <p className="text-xs text-muted-foreground mt-1">{note}</p>
+        <p className="text-xs text-muted-foreground">{note}</p>
+        <p className="text-sm italic text-accent font-medium">"{emotion}"</p>
+        <Button
+          size="sm"
+          className="w-full"
+          onClick={() => document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })}
+        >
+          Get This Result
+        </Button>
       </div>
     </div>
   );
