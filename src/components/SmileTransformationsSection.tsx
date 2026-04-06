@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useMotionReduced } from "@/lib/motionReduced";
 import { Button } from "@/components/ui/button";
@@ -45,10 +45,10 @@ interface SliderCardProps {
 const SliderCard = ({ before, after, label, note, emotion }: SliderCardProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(50);
-  const [isDragging, setIsDragging] = useState(false);
-  const startXRef = useRef<number>(0);
-  const startYRef = useRef<number>(0);
-  const intentLockedRef = useRef<"horizontal" | "vertical" | null>(null);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const startYRef = useRef(0);
+  const intentRef = useRef<"horizontal" | "vertical" | null>(null);
 
   const updatePosition = useCallback((clientX: number) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -57,56 +57,86 @@ const SliderCard = ({ before, after, label, note, emotion }: SliderCardProps) =>
     setPosition((x / rect.width) * 100);
   }, []);
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    // Only respond to mouse or direct touch on the handle area
-    startXRef.current = e.clientX;
-    startYRef.current = e.clientY;
-    intentLockedRef.current = null;
-    setIsDragging(true);
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    updatePosition(e.clientX);
+  // Attach native touch events with passive:false so we can call preventDefault
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      startXRef.current = touch.clientX;
+      startYRef.current = touch.clientY;
+      intentRef.current = null;
+      isDraggingRef.current = true;
+      updatePosition(touch.clientX);
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isDraggingRef.current) return;
+      const touch = e.touches[0];
+      const deltaX = Math.abs(touch.clientX - startXRef.current);
+      const deltaY = Math.abs(touch.clientY - startYRef.current);
+
+      // Determine intent on first real movement
+      if (intentRef.current === null && (deltaX > 5 || deltaY > 5)) {
+        intentRef.current = deltaY > deltaX ? "vertical" : "horizontal";
+      }
+
+      if (intentRef.current === "vertical") {
+        // Let the page scroll — stop tracking
+        isDraggingRef.current = false;
+        return;
+      }
+
+      if (intentRef.current === "horizontal") {
+        // Block page scroll and move the slider
+        e.preventDefault();
+        updatePosition(touch.clientX);
+      }
+    };
+
+    const onTouchEnd = () => {
+      isDraggingRef.current = false;
+      intentRef.current = null;
+    };
+
+    // passive: false is required to allow preventDefault inside touchmove
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    el.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchEnd);
+    };
   }, [updatePosition]);
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isDragging) return;
-
-    const deltaX = Math.abs(e.clientX - startXRef.current);
-    const deltaY = Math.abs(e.clientY - startYRef.current);
-
-    // Lock scroll intent on first significant movement
-    if (intentLockedRef.current === null && (deltaX > 4 || deltaY > 4)) {
-      intentLockedRef.current = deltaY > deltaX ? "vertical" : "horizontal";
-    }
-
-    // If user is scrolling vertically, release drag and let page scroll
-    if (intentLockedRef.current === "vertical") {
-      setIsDragging(false);
-      intentLockedRef.current = null;
-      return;
-    }
-
-    // Only prevent default (block scroll) if we confirmed horizontal intent
-    if (intentLockedRef.current === "horizontal") {
-      e.preventDefault();
-      updatePosition(e.clientX);
-    }
-  }, [isDragging, updatePosition]);
-
-  const handlePointerUp = useCallback(() => {
-    setIsDragging(false);
-    intentLockedRef.current = null;
-  }, []);
+  // Mouse events for desktop (unchanged)
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    isDraggingRef.current = true;
+    updatePosition(e.clientX);
+    const onMouseMove = (ev: MouseEvent) => {
+      if (!isDraggingRef.current) return;
+      updatePosition(ev.clientX);
+    };
+    const onMouseUp = () => {
+      isDraggingRef.current = false;
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+  }, [updatePosition]);
 
   return (
     <div className="rounded-xl border-2 border-accent/30 overflow-hidden shadow-sm bg-card">
       <div
         ref={containerRef}
         className="relative aspect-[3/2] cursor-col-resize select-none"
-        // Removed touch-none — we handle touch behavior manually to allow vertical scroll
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        onMouseDown={handleMouseDown}
         role="slider"
         aria-label={`Before and after comparison for ${label}`}
         aria-valuemin={0}
