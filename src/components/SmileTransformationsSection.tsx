@@ -1,5 +1,5 @@
-import { useRef, useState, useCallback, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useMotionReduced } from "@/lib/motionReduced";
 import { Button } from "@/components/ui/button";
 
@@ -15,217 +15,187 @@ const transformations = [
     label: "Porcelain Veneers",
     note: "8 veneers, completed in 2 visits",
     emotion: "Regain confidence in your smile",
-    before: beforeVeneers, // Fixed
-    after: afterVeneers,   // Fixed
+    before: beforeVeneers,
+    after: afterVeneers,
+    hint: "Tap to see what we started with",
   },
   {
     label: "Professional Whitening",
     note: "6 shades brighter in a single session",
     emotion: "Smile without holding back",
-    before: beforeWhitening, // Fixed
-    after: afterWhitening,   // Fixed
+    before: beforeWhitening,
+    after: afterWhitening,
+    hint: "Tap to reveal the before",
   },
   {
     label: "Smile Design",
     note: "Full digital smile makeover plan",
     emotion: "Love the way you look again",
-    before: beforeSmileDesign, // Fixed
-    after: afterSmileDesign,   // Fixed
+    before: beforeSmileDesign,
+    after: afterSmileDesign,
+    hint: "Tap to see the transformation",
   },
 ];
 
-interface SliderCardProps {
+interface TransformCardProps {
   before: string;
   after: string;
   label: string;
   note: string;
   emotion: string;
+  hint: string;
+  index: number;
+  reduceMotion: boolean;
 }
 
-const SliderCard = ({ before, after, label, note, emotion }: SliderCardProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState(50);
-  const isDraggingRef = useRef(false);
-  const startXRef = useRef(0);
-  const startYRef = useRef(0);
-  const intentRef = useRef<"horizontal" | "vertical" | null>(null);
+const TransformCard = ({
+  before,
+  after,
+  label,
+  note,
+  emotion,
+  hint,
+  index,
+  reduceMotion,
+}: TransformCardProps) => {
+  // Show "after" by default — best foot forward
+  const [showBefore, setShowBefore] = useState(false);
 
-  const updatePosition = useCallback((clientX: number) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-    setPosition((x / rect.width) * 100);
-  }, []);
-
-  // Attach native touch events with passive:false so we can call preventDefault
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const onTouchStart = (e: TouchEvent) => {
-      const touch = e.touches[0];
-      startXRef.current = touch.clientX;
-      startYRef.current = touch.clientY;
-      intentRef.current = null;
-      isDraggingRef.current = true;
-      updatePosition(touch.clientX);
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      if (!isDraggingRef.current) return;
-      const touch = e.touches[0];
-      const deltaX = Math.abs(touch.clientX - startXRef.current);
-      const deltaY = Math.abs(touch.clientY - startYRef.current);
-
-      // Determine intent on first real movement
-      if (intentRef.current === null && (deltaX > 5 || deltaY > 5)) {
-        intentRef.current = deltaY > deltaX ? "vertical" : "horizontal";
-      }
-
-      if (intentRef.current === "vertical") {
-        // Let the page scroll — stop tracking
-        isDraggingRef.current = false;
-        return;
-      }
-
-      if (intentRef.current === "horizontal") {
-        // Block page scroll and move the slider
-        e.preventDefault();
-        updatePosition(touch.clientX);
-      }
-    };
-
-    const onTouchEnd = () => {
-      isDraggingRef.current = false;
-      intentRef.current = null;
-    };
-
-    // passive: false is required to allow preventDefault inside touchmove
-    el.addEventListener("touchstart", onTouchStart, { passive: true });
-    el.addEventListener("touchmove", onTouchMove, { passive: false });
-    el.addEventListener("touchend", onTouchEnd, { passive: true });
-    el.addEventListener("touchcancel", onTouchEnd, { passive: true });
-
-    return () => {
-      el.removeEventListener("touchstart", onTouchStart);
-      el.removeEventListener("touchmove", onTouchMove);
-      el.removeEventListener("touchend", onTouchEnd);
-      el.removeEventListener("touchcancel", onTouchEnd);
-    };
-  }, [updatePosition]);
-
-  // Mouse events for desktop (unchanged)
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    isDraggingRef.current = true;
-    updatePosition(e.clientX);
-    const onMouseMove = (ev: MouseEvent) => {
-      if (!isDraggingRef.current) return;
-      updatePosition(ev.clientX);
-    };
-    const onMouseUp = () => {
-      isDraggingRef.current = false;
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-    };
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-  }, [updatePosition]);
+  const scrollToBooking = () =>
+    document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
 
   return (
-    <div className="rounded-xl border-2 border-accent/30 overflow-hidden shadow-sm bg-card">
-      <div
-        ref={containerRef}
-        className="relative aspect-[3/2] cursor-col-resize select-none"
-        onMouseDown={handleMouseDown}
-        role="slider"
-        aria-label={`Before and after comparison for ${label}`}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={Math.round(position)}
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "ArrowLeft") setPosition((p) => Math.max(0, p - 2));
-          if (e.key === "ArrowRight") setPosition((p) => Math.min(100, p + 2));
-        }}
-      >
-        {/* Before image (full) */}
-        <img
-          src={before}
-          alt={`Before ${label}`}
-          className="absolute inset-0 w-full h-full object-cover"
-          draggable={false}
-        />
-        {/* After image (clipped) */}
-        <img
-          src={after}
-          alt={`After ${label}`}
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
-          draggable={false}
-        />
-        {/* Divider line */}
-        <div
-          className="absolute top-0 bottom-0 w-0.5 bg-white/90 shadow-lg z-10"
-          style={{ left: `${position}%`, transform: "translateX(-50%)" }}
-        >
-          {/* Handle */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center border-2 border-accent">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-accent">
-              <path d="M5 3L2 8L5 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M11 3L14 8L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
-        </div>
-        {/* Labels */}
-        <span className="absolute bottom-3 left-3 text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded">Before</span>
-        <span className="absolute bottom-3 right-3 text-xs font-semibold text-white bg-black/50 px-2 py-1 rounded">After</span>
+    <motion.div
+      initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={reduceMotion ? { duration: 0 } : { duration: 0.5, delay: index * 0.12 }}
+      className="rounded-xl border-2 border-accent/30 overflow-hidden shadow-sm bg-card flex flex-col"
+    >
+      {/* Subtle hint above image */}
+      <div className="flex items-center justify-center gap-1.5 py-2 px-4 bg-accent/5 border-b border-accent/10">
+        <span className="text-[11px] text-accent/70 font-medium tracking-wide">
+          {showBefore ? "👆 Tap to see the result" : hint}
+        </span>
       </div>
-      <div className="p-4 text-center space-y-3">
+
+      {/* Image area — tap to toggle */}
+      <div
+        className="relative aspect-[3/2] overflow-hidden cursor-pointer group"
+        onClick={() => setShowBefore((v) => !v)}
+      >
+        <AnimatePresence mode="wait">
+          {showBefore ? (
+            <motion.img
+              key="before"
+              src={before}
+              alt={`Before ${label}`}
+              className="absolute inset-0 w-full h-full object-cover"
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35 }}
+              draggable={false}
+            />
+          ) : (
+            <motion.img
+              key="after"
+              src={after}
+              alt={`After ${label}`}
+              className="absolute inset-0 w-full h-full object-cover"
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35 }}
+              draggable={false}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Label badge */}
+        <span className="absolute bottom-3 left-3 text-xs font-semibold text-white bg-black/55 px-2 py-1 rounded z-10">
+          {showBefore ? "Before" : "After"}
+        </span>
+
+        {/* Hover/tap ripple hint overlay */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/8 group-active:bg-black/15 transition-colors duration-200 z-10" />
+      </div>
+
+      {/* Card body */}
+      <div className="p-4 text-center space-y-3 flex flex-col flex-1">
         <p className="text-sm font-semibold text-foreground">{label}</p>
         <p className="text-xs text-muted-foreground">{note}</p>
         <p className="text-sm italic text-accent font-medium">"{emotion}"</p>
-        <Button
-          size="sm"
-          className="w-full"
-          onClick={() => document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })}
+
+        {/* Toggle button */}
+        <button
+          onClick={() => setShowBefore((v) => !v)}
+          className="text-xs text-accent underline underline-offset-2 hover:text-accent/70 transition-colors"
         >
-          Get This Result
-        </Button>
+          {showBefore ? "← See the result" : "See where we started →"}
+        </button>
+
+        {/* Primary CTA — glowing */}
+        <div className="pt-1">
+          <Button
+            size="sm"
+            className="w-full relative shadow-[0_0_14px_2px_hsl(var(--accent)/0.35)] hover:shadow-[0_0_22px_4px_hsl(var(--accent)/0.5)] transition-shadow duration-300"
+            onClick={scrollToBooking}
+          >
+            Get This Result Now →
+          </Button>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 const SmileTransformationsSection = () => {
-  const { instant, reduceMotion } = useMotionReduced();
+  const { reduceMotion } = useMotionReduced();
+
+  const scrollToBooking = () =>
+    document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
 
   return (
     <section id="transformations" className="py-20 md:py-28 bg-muted/30">
       <div className="container">
+        {/* Section header */}
         <div className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
             Smile Transformations
           </h2>
           <p className="mt-3 text-muted-foreground max-w-lg mx-auto">
-            See what's possible — drag the slider to compare.
+            Real results from our patients — tap any photo to reveal the before.
           </p>
         </div>
 
+        {/* Cards grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {transformations.map((t, i) => (
-            <motion.div
+            <TransformCard
               key={t.label}
-              initial={instant ? false : { opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={reduceMotion ? { duration: 0 } : { delay: i * 0.12 }}
-            >
-              <SliderCard {...t} />
-            </motion.div>
+              {...t}
+              index={i}
+              reduceMotion={reduceMotion}
+            />
           ))}
         </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-8">
+        {/* Bottom section-level CTA */}
+        <div className="mt-12 flex flex-col items-center gap-3">
+          <p className="text-sm text-muted-foreground">
+            Ready to write your own transformation story?
+          </p>
+          <Button
+            size="lg"
+            className="px-10 shadow-[0_0_18px_3px_hsl(var(--accent)/0.4)] hover:shadow-[0_0_28px_6px_hsl(var(--accent)/0.55)] transition-shadow duration-300"
+            onClick={scrollToBooking}
+          >
+            Book Your Free Consultation →
+          </Button>
+        </div>
+
+        <p className="text-center text-xs text-muted-foreground mt-6">
           Illustrative placeholder images — actual patient results may vary.
         </p>
       </div>
