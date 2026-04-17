@@ -6,14 +6,14 @@ export const SITE_URL = "https://luminadental.com" as const;
 
 export const CONTACT = {
   brandName: "Lumina Dental",
-  phoneDisplay: "+1 (555) 234-5678",
+  phoneDisplay: "+973 1234 5678",
   /** Use in `tel:` links (E.164). */
-  phoneTel: "+15552345678",
+  phoneTel: "+97312345678",
   email: "hello@luminadental.com",
-  cityRegion: "San Francisco, CA",
-  addressLine1: "123 Market Street, Suite 400",
-  postalCode: "94103",
-  fullAddress: "123 Market Street, Suite 400, San Francisco, CA 94103",
+  cityRegion: "Manama, Bahrain",
+  addressLine1: "Building 123, Road 456, Block 789",
+  postalCode: "317",
+  fullAddress: "Building 123, Road 456, Block 789, Seef District, Manama, Bahrain",
 } as const;
 
 export const CONTACT_TEL_HREF = `tel:${CONTACT.phoneTel}` as const;
