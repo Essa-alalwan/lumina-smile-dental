@@ -207,7 +207,7 @@ const SmileTransformationsSection = () => {
     document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
 
   return (
-    <section id="transformations" className="py-20 md:py-28 bg-muted/30">
+    <section id="transformations" className="relative py-20 md:py-28 bg-muted/30 before:content-[''] before:absolute before:inset-x-0 before:-top-6 before:h-6 before:bg-gradient-to-b before:from-transparent before:to-muted/30 before:pointer-events-none">
       <div className="container">
         {/* Section header */}
         <div className="text-center mb-14">

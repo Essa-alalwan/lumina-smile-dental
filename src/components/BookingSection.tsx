@@ -270,7 +270,7 @@ const BookingSection = () => {
   }
 
   return (
-    <section id="booking" className="py-20 md:py-28 bg-surface" aria-labelledby="booking-heading">
+    <section id="booking" className="relative py-20 md:py-28 bg-surface before:content-[''] before:absolute before:inset-x-0 before:-top-6 before:h-6 before:bg-gradient-to-b before:from-transparent before:to-surface before:pointer-events-none" aria-labelledby="booking-heading">
       <div className="container">
         <div className="text-center mb-12">
           <h2 id="booking-heading" className="text-3xl md:text-4xl font-bold text-foreground">
