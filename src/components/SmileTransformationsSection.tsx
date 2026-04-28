@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Hand } from "lucide-react";
 import { useMotionReduced } from "@/lib/motionReduced";
 import { Button } from "@/components/ui/button";
 
@@ -17,6 +18,8 @@ const transformations = [
     emotion: "Regain confidence in your smile",
     before: beforeVeneers,
     after: afterVeneers,
+    beforeAlt: "Before — discolored, uneven upper teeth with visible gaps",
+    afterAlt: "After porcelain veneers — natural, aligned, brighter smile",
     hint: "Tap to see what we started with",
   },
   {
@@ -25,6 +28,8 @@ const transformations = [
     emotion: "Smile without holding back",
     before: beforeWhitening,
     after: afterWhitening,
+    beforeAlt: "Before whitening — yellowed, stained teeth from coffee and time",
+    afterAlt: "After whitening — visibly brighter, healthier-looking teeth",
     hint: "Tap to reveal the before",
   },
   {
@@ -33,6 +38,8 @@ const transformations = [
     emotion: "Love the way you look again",
     before: beforeSmileDesign,
     after: afterSmileDesign,
+    beforeAlt: "Before smile design — worn, uneven, slightly crowded teeth",
+    afterAlt: "After smile design — clean, balanced, confident smile",
     hint: "Tap to see the transformation",
   },
 ];
@@ -44,6 +51,8 @@ interface TransformCardProps {
   note: string;
   emotion: string;
   hint: string;
+  beforeAlt: string;
+  afterAlt: string;
   index: number;
   reduceMotion: boolean;
 }
@@ -55,14 +64,28 @@ const TransformCard = ({
   note,
   emotion,
   hint,
+  beforeAlt,
+  afterAlt,
   index,
   reduceMotion,
 }: TransformCardProps) => {
   // Show "after" by default — best foot forward
   const [showBefore, setShowBefore] = useState(false);
+  const [showTapHint, setShowTapHint] = useState(index === 0);
+
+  useEffect(() => {
+    if (!showTapHint) return;
+    const t = setTimeout(() => setShowTapHint(false), 4000);
+    return () => clearTimeout(t);
+  }, [showTapHint]);
 
   const scrollToBooking = () =>
     document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
+
+  const handleToggle = () => {
+    setShowBefore((v) => !v);
+    setShowTapHint(false);
+  };
 
   return (
     <motion.div
@@ -82,14 +105,16 @@ const TransformCard = ({
       {/* Image area — tap to toggle */}
       <div
         className="relative aspect-[3/2] overflow-hidden cursor-pointer group"
-        onClick={() => setShowBefore((v) => !v)}
+        onClick={handleToggle}
       >
         <AnimatePresence mode="wait">
           {showBefore ? (
             <motion.img
               key="before"
               src={before}
-              alt={`Before ${label}`}
+              alt={beforeAlt}
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover"
               initial={reduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -101,7 +126,9 @@ const TransformCard = ({
             <motion.img
               key="after"
               src={after}
-              alt={`After ${label}`}
+              alt={afterAlt}
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover"
               initial={reduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -117,6 +144,29 @@ const TransformCard = ({
           {showBefore ? "Before" : "After"}
         </span>
 
+        {/* Animated tap-to-compare hint (first card only, auto-dismisses) */}
+        <AnimatePresence>
+          {showTapHint ? (
+            <motion.div
+              key="tap-hint"
+              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-x-0 top-3 flex justify-center pointer-events-none z-20"
+            >
+              <span
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-foreground/85 text-background text-xs font-semibold shadow-lg ${
+                  reduceMotion ? "" : "animate-pulse"
+                }`}
+              >
+                <Hand className="w-3.5 h-3.5" aria-hidden />
+                Tap to compare
+              </span>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+
         {/* Hover/tap ripple hint overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/8 group-active:bg-black/15 transition-colors duration-200 z-10" />
       </div>
@@ -129,7 +179,7 @@ const TransformCard = ({
 
         {/* Toggle button */}
         <button
-          onClick={() => setShowBefore((v) => !v)}
+          onClick={handleToggle}
           className="text-xs text-accent underline underline-offset-2 hover:text-accent/70 transition-colors"
         >
           {showBefore ? "← See the result" : "See where we started →"}
@@ -157,7 +207,7 @@ const SmileTransformationsSection = () => {
     document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
 
   return (
-    <section id="transformations" className="py-20 md:py-28 bg-muted/30">
+    <section id="transformations" className="relative py-20 md:py-28 bg-muted/30 before:content-[''] before:absolute before:inset-x-0 before:-top-6 before:h-6 before:bg-gradient-to-b before:from-transparent before:to-muted/30 before:pointer-events-none">
       <div className="container">
         {/* Section header */}
         <div className="text-center mb-14">

@@ -19,6 +19,10 @@ export const CONTACT = {
 export const CONTACT_TEL_HREF = `tel:${CONTACT.phoneTel}` as const;
 export const CONTACT_MAILTO_HREF = `mailto:${CONTACT.email}` as const;
 
+/** WhatsApp uses the phone number digits without the leading "+". */
+export const WHATSAPP_HREF =
+  `https://wa.me/${CONTACT.phoneTel.replace(/[^\d]/g, "")}` as const;
+
 export const CONTACT_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
   CONTACT.fullAddress,
 )}` as const;

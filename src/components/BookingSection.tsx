@@ -107,6 +107,7 @@ const BookingSection = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [serviceError, setServiceError] = useState<string | null>(null);
+  const [slotError, setSlotError] = useState<string | null>(null);
 
   const weekDays = useMemo(() => {
     const ws = startOfWeek(selectedDate, { weekStartsOn: 1 });
@@ -139,7 +140,7 @@ const BookingSection = () => {
       return;
     }
     if (!isValidPhone(value)) {
-      setPhoneError("Enter a valid phone number (at least 10 digits).");
+      setPhoneError("Enter a valid phone (e.g. +973 XXXX XXXX).");
       return;
     }
     setPhoneError(null);
@@ -167,7 +168,7 @@ const BookingSection = () => {
       setPhoneError("Phone number is required.");
       ok = false;
     } else if (!isValidPhone(phone)) {
-      setPhoneError("Enter a valid phone number (at least 10 digits).");
+      setPhoneError("Enter a valid phone (e.g. +973 XXXX XXXX).");
       ok = false;
     } else {
       setPhoneError(null);
@@ -177,6 +178,12 @@ const BookingSection = () => {
       ok = false;
     } else {
       setServiceError(null);
+    }
+    if (!selectedSlot) {
+      setSlotError("Please choose a time slot.");
+      ok = false;
+    } else {
+      setSlotError(null);
     }
     if (!ok) return;
 
@@ -192,40 +199,70 @@ const BookingSection = () => {
   if (submitted) {
     return (
       <section id="booking" className="py-20 md:py-28 bg-surface" aria-labelledby="booking-success-heading">
-        <div className="container max-w-2xl text-center">
+        <div className="container max-w-2xl">
           <motion.div
             initial={instant ? false : { opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={reduceMotion ? { duration: 0 } : undefined}
-            className="bg-card rounded-xl p-10 shadow-sm border border-border"
+            className="bg-card rounded-xl p-8 md:p-10 shadow-sm border border-border"
           >
-            <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-4" aria-hidden />
-            <h3 id="booking-success-heading" className="text-2xl font-bold text-foreground">
-              Appointment Requested
-            </h3>
-            <p className="mt-3 text-muted-foreground">
-              Thank you! We&apos;ll confirm your appointment shortly via email or phone.
-            </p>
-            <p className="mt-4 text-sm text-foreground">
-              <span className="font-medium">Service:</span> {serviceLabel(service)}
-            </p>
-            <Button
-              className="mt-6 rounded-lg"
-              onClick={() => {
-                setSubmitted(false);
-                setFullName("");
-                setPhone("");
-                setEmail("");
-                setService("");
-                setSelectedSlot(null);
-                setNameError(null);
-                setEmailError(null);
-                setPhoneError(null);
-                setServiceError(null);
-              }}
-            >
-              Book Another
-            </Button>
+            <div className="text-center">
+              <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-4" aria-hidden />
+              <h3 id="booking-success-heading" className="text-2xl font-bold text-foreground">
+                Appointment Requested
+              </h3>
+              <p className="mt-3 text-muted-foreground">
+                Thanks, {fullName.split(" ")[0]}. We&apos;ll call to confirm within 1 business hour.
+              </p>
+            </div>
+
+            <dl className="mt-8 grid sm:grid-cols-2 gap-x-6 gap-y-4 text-sm bg-muted/40 rounded-lg p-5 border border-border">
+              <div>
+                <dt className="text-muted-foreground">Name</dt>
+                <dd className="font-medium text-foreground mt-0.5">{fullName}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Service</dt>
+                <dd className="font-medium text-foreground mt-0.5">{serviceLabel(service)}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Date</dt>
+                <dd className="font-medium text-foreground mt-0.5">{format(selectedDate, "EEEE, MMM d")}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Time</dt>
+                <dd className="font-medium text-foreground mt-0.5">{selectedSlot}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Phone</dt>
+                <dd className="font-medium text-foreground mt-0.5">{phone}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Email</dt>
+                <dd className="font-medium text-foreground mt-0.5 break-all">{email}</dd>
+              </div>
+            </dl>
+
+            <div className="mt-6 text-center">
+              <Button
+                className="rounded-lg"
+                onClick={() => {
+                  setSubmitted(false);
+                  setFullName("");
+                  setPhone("");
+                  setEmail("");
+                  setService("");
+                  setSelectedSlot(null);
+                  setNameError(null);
+                  setEmailError(null);
+                  setPhoneError(null);
+                  setServiceError(null);
+                  setSlotError(null);
+                }}
+              >
+                Book Another
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -233,7 +270,7 @@ const BookingSection = () => {
   }
 
   return (
-    <section id="booking" className="py-20 md:py-28 bg-surface" aria-labelledby="booking-heading">
+    <section id="booking" className="relative py-20 md:py-28 bg-surface before:content-[''] before:absolute before:inset-x-0 before:-top-6 before:h-6 before:bg-gradient-to-b before:from-transparent before:to-surface before:pointer-events-none" aria-labelledby="booking-heading">
       <div className="container">
         <div className="text-center mb-12">
           <h2 id="booking-heading" className="text-3xl md:text-4xl font-bold text-foreground">
@@ -329,7 +366,11 @@ const BookingSection = () => {
                 <button
                   key={`${slot.time}-${i}`}
                   type="button"
-                  onClick={() => slot.available && setSelectedSlot(slot.time)}
+                  onClick={() => {
+                    if (!slot.available) return;
+                    setSelectedSlot(slot.time);
+                    setSlotError(null);
+                  }}
                   disabled={!slot.available}
                   className={cn(
                     "flex items-center gap-3 p-4 rounded-xl border text-start transition-all min-h-[44px]",
@@ -351,6 +392,11 @@ const BookingSection = () => {
                 </button>
               ))}
             </div>
+            {slotError ? (
+              <p className="mt-3 text-sm text-destructive" role="alert">
+                {slotError}
+              </p>
+            ) : null}
           </div>
 
           {/* Booking form */}
@@ -393,6 +439,7 @@ const BookingSection = () => {
                   type="tel"
                   autoComplete="tel"
                   inputMode="tel"
+                  placeholder="+973 XXXX XXXX"
                   value={phone}
                   onChange={(e) => {
                     setPhone(e.target.value);
@@ -401,14 +448,20 @@ const BookingSection = () => {
                   onBlur={() => validatePhoneField(phone)}
                   required
                   aria-invalid={phoneError ? true : undefined}
-                  aria-describedby={phoneError ? `${phoneId}-error` : undefined}
+                  aria-describedby={
+                    phoneError ? `${phoneId}-error` : `${phoneId}-hint`
+                  }
                   className="rounded-lg min-h-[44px]"
                 />
                 {phoneError ? (
                   <p id={`${phoneId}-error`} className="text-sm text-destructive" role="alert">
                     {phoneError}
                   </p>
-                ) : null}
+                ) : (
+                  <p id={`${phoneId}-hint`} className="text-xs text-muted-foreground">
+                    Format: +973 XXXX XXXX
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">

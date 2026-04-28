@@ -1,42 +1,96 @@
+# Front-end improvements — implementation plan
 
+Four packs, all front-end only. Skipping items already done (booking labels/validation, mobile menu a11y, sticky safe areas).
 
-# Upgrade Before & After / Smile Transformations
+---
 
-## Current State
-The "Smile Transformations" area is hidden behind a toggle button at the bottom of the Testimonials section. It shows two cards with plain colored boxes labeled "Before" and "After" — no imagery, no interactivity, minimal visual impact.
+## Pack 1 — Trust & SEO
 
-## Proposed Upgrade
+### 1.1 Hero trust strip
+Add a horizontal badge row directly under the hero CTAs (`HeroSection.tsx`):
+- 12+ Years · 500+ Patients · Google 4.9★ · Sterilization Certified
+- Small icons + white/80 text on translucent pill backgrounds
+- Hidden on `xs`, visible from `sm` up; respects reduced motion
 
-### 1. Promote to its own section
-Move Before & After out of TestimonialsSection into a dedicated `SmileTransformationsSection.tsx`, placed between Testimonials and Patient Experience. This gives it the visual weight it deserves for cosmetic-focused patients — the highest-value audience.
+### 1.2 FAQ accordion section
+New component `FAQSection.tsx` using existing shadcn `Accordion`:
+- 6 questions: pricing & insurance, languages spoken (EN/AR), parking at Seef, first visit expectations, payment methods, emergency hours
+- Inserted in `Index.tsx` between `PatientExperience` and `Logistics`
+- Section id `#faq`, added to navbar links
 
-### 2. Interactive image slider
-Replace static side-by-side boxes with a **draggable slider** overlay. One image fills the card; a vertical divider handle lets the user drag left/right to reveal the before vs. after. This is the industry-standard pattern for cosmetic results and feels premium.
+### 1.3 JSON-LD structured data
+Inject `Dentist` / `LocalBusiness` schema in `index.html` (static `<script type="application/ld+json">`) using values from `siteContact.ts` mirrored as constants:
+- name, image, address (Seef, Manama, BH), telephone, openingHours, priceRange, geo (approx Seef coords), url
 
-Each transformation card:
-- Full-width Unsplash smile images (placeholder) with the slider overlay
-- Treatment label (e.g. "Porcelain Veneers", "Professional Whitening", "Smile Design")
-- A short result note ("8 veneers, completed in 2 visits")
-- "Results may vary" disclaimer
+### 1.4 Meta + lang refresh
+- `index.html`: `<html lang="en">` already set; update description to mention Bahrain/Seef
+- Update `og:image` alt copy; keep URL placeholder until real asset exists (note in comment)
 
-### 3. More cases
-Expand from 2 to 3 transformation cards: Veneers, Whitening, and Smile Design — matching the three cosmetic services.
+---
 
-### 4. Visual treatment
-- Section heading: "Smile Transformations" with subline "See what's possible"
-- Gold accent border on cards (matching the cosmetic cards in Services)
-- Subtle entrance animations on scroll
+## Pack 2 — Booking polish
 
-### 5. Layout
-- Desktop: 3-column grid
-- Tablet: 2 columns (third card full-width below)
-- Mobile: single column, stacked
+### 2.1 Bahrain phone hint
+- Add visible helper text under phone field: *Format: +973 XXXX XXXX*
+- Update `phoneError` message to suggest Bahrain format
 
-## Files Changed
-- **New**: `src/components/SmileTransformationsSection.tsx` — dedicated section with slider component
-- **Edit**: `src/components/TestimonialsSection.tsx` — remove the existing toggle/before-after block
-- **Edit**: `src/pages/Index.tsx` — insert new section between Testimonials and PatientExperience
+### 2.2 Confirmation summary
+Replace generic success card content in `BookingSection.tsx` (lines 192–233) with a structured summary:
+- Name, Service, Date (`format(selectedDate, "EEEE, MMM d")`), Time (`selectedSlot`), Phone, Email
+- "We'll call to confirm within 1 business hour" reassurance line
+- Keep "Book Another" reset
 
-## Technical Detail
-The slider will be a custom component using pointer events (mouse + touch) to track drag position and apply a `clip-path: inset(0 X% 0 0)` on the "after" image. No extra dependencies needed.
+### 2.3 Require time slot before submit
+Add `selectedSlot` validation; show error near time field if empty on submit.
 
+---
+
+## Pack 3 — Smile Transformations polish
+
+In `SmileTransformationsSection.tsx`:
+
+### 3.1 Animated tap hint
+- Replace static text hint badge with subtle pulsing finger/hand icon overlay on first card only, fading out after first interaction or 4s
+- Use Tailwind `animate-pulse` on a small pill that says "Tap to compare"
+- Respects `useMotionReduced`
+
+### 3.2 Lazy load + better alt
+- Add `loading="lazy"` and `decoding="async"` to all 6 transformation `<motion.img>` tags
+- Improve alt text: e.g. *"Before — discolored, uneven upper teeth"* / *"After porcelain veneers — natural, aligned smile"*
+
+---
+
+## Pack 4 — Mobile UX
+
+### 4.1 WhatsApp FAB
+Update `StickyBooking.tsx`:
+- Mobile bar: replace single phone-icon button with two icons — WhatsApp (green) + Phone — keeping Book CTA as flex-1
+- Desktop floating: add WhatsApp pill below the Book button
+- Add `CONTACT.whatsapp` constant in `siteContact.ts` (defaults to phoneTel) and `WHATSAPP_HREF = https://wa.me/<digits>`
+
+### 4.2 Section gradient dividers
+- Add a thin gradient transition (`bg-gradient-to-b from-transparent to-surface` 24px tall block) at the top of `BookingSection`, `SmileTransformationsSection`, and `LogisticsSection` to soften hard color stops
+- Implementation: a `<div aria-hidden className="h-6 -mt-6 bg-gradient-to-b from-transparent to-[current-section-bg]">` or a simple `before:` pseudo on the `<section>`
+
+---
+
+## Files
+
+**Created**
+- `src/components/FAQSection.tsx`
+
+**Edited**
+- `index.html` — JSON-LD script, meta description tweak
+- `src/lib/siteContact.ts` — add `whatsapp`, `WHATSAPP_HREF`
+- `src/components/HeroSection.tsx` — trust strip
+- `src/components/BookingSection.tsx` — phone hint, slot validation, summary card
+- `src/components/SmileTransformationsSection.tsx` — animated hint, lazy/alt
+- `src/components/StickyBooking.tsx` — WhatsApp button(s)
+- `src/components/Navbar.tsx` — add FAQ link
+- `src/pages/Index.tsx` — insert `<FAQSection />`
+- Section components (Booking/Transformations/Logistics) — gradient divider div
+
+## Out of scope
+- Arabic toggle (separate large effort — will scope later if desired)
+- Real og-image asset (needs design upload)
+- Removing TanStack Query (needs full audit pass)
