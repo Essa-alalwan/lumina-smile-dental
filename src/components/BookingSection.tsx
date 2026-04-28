@@ -199,40 +199,70 @@ const BookingSection = () => {
   if (submitted) {
     return (
       <section id="booking" className="py-20 md:py-28 bg-surface" aria-labelledby="booking-success-heading">
-        <div className="container max-w-2xl text-center">
+        <div className="container max-w-2xl">
           <motion.div
             initial={instant ? false : { opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={reduceMotion ? { duration: 0 } : undefined}
-            className="bg-card rounded-xl p-10 shadow-sm border border-border"
+            className="bg-card rounded-xl p-8 md:p-10 shadow-sm border border-border"
           >
-            <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-4" aria-hidden />
-            <h3 id="booking-success-heading" className="text-2xl font-bold text-foreground">
-              Appointment Requested
-            </h3>
-            <p className="mt-3 text-muted-foreground">
-              Thank you! We&apos;ll confirm your appointment shortly via email or phone.
-            </p>
-            <p className="mt-4 text-sm text-foreground">
-              <span className="font-medium">Service:</span> {serviceLabel(service)}
-            </p>
-            <Button
-              className="mt-6 rounded-lg"
-              onClick={() => {
-                setSubmitted(false);
-                setFullName("");
-                setPhone("");
-                setEmail("");
-                setService("");
-                setSelectedSlot(null);
-                setNameError(null);
-                setEmailError(null);
-                setPhoneError(null);
-                setServiceError(null);
-              }}
-            >
-              Book Another
-            </Button>
+            <div className="text-center">
+              <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-4" aria-hidden />
+              <h3 id="booking-success-heading" className="text-2xl font-bold text-foreground">
+                Appointment Requested
+              </h3>
+              <p className="mt-3 text-muted-foreground">
+                Thanks, {fullName.split(" ")[0]}. We&apos;ll call to confirm within 1 business hour.
+              </p>
+            </div>
+
+            <dl className="mt-8 grid sm:grid-cols-2 gap-x-6 gap-y-4 text-sm bg-muted/40 rounded-lg p-5 border border-border">
+              <div>
+                <dt className="text-muted-foreground">Name</dt>
+                <dd className="font-medium text-foreground mt-0.5">{fullName}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Service</dt>
+                <dd className="font-medium text-foreground mt-0.5">{serviceLabel(service)}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Date</dt>
+                <dd className="font-medium text-foreground mt-0.5">{format(selectedDate, "EEEE, MMM d")}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Time</dt>
+                <dd className="font-medium text-foreground mt-0.5">{selectedSlot}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Phone</dt>
+                <dd className="font-medium text-foreground mt-0.5">{phone}</dd>
+              </div>
+              <div>
+                <dt className="text-muted-foreground">Email</dt>
+                <dd className="font-medium text-foreground mt-0.5 break-all">{email}</dd>
+              </div>
+            </dl>
+
+            <div className="mt-6 text-center">
+              <Button
+                className="rounded-lg"
+                onClick={() => {
+                  setSubmitted(false);
+                  setFullName("");
+                  setPhone("");
+                  setEmail("");
+                  setService("");
+                  setSelectedSlot(null);
+                  setNameError(null);
+                  setEmailError(null);
+                  setPhoneError(null);
+                  setServiceError(null);
+                  setSlotError(null);
+                }}
+              >
+                Book Another
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
