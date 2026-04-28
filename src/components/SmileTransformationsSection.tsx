@@ -179,7 +179,7 @@ const TransformCard = ({
 
         {/* Toggle button */}
         <button
-          onClick={() => setShowBefore((v) => !v)}
+          onClick={handleToggle}
           className="text-xs text-accent underline underline-offset-2 hover:text-accent/70 transition-colors"
         >
           {showBefore ? "← See the result" : "See where we started →"}
