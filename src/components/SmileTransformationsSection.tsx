@@ -105,14 +105,16 @@ const TransformCard = ({
       {/* Image area — tap to toggle */}
       <div
         className="relative aspect-[3/2] overflow-hidden cursor-pointer group"
-        onClick={() => setShowBefore((v) => !v)}
+        onClick={handleToggle}
       >
         <AnimatePresence mode="wait">
           {showBefore ? (
             <motion.img
               key="before"
               src={before}
-              alt={`Before ${label}`}
+              alt={beforeAlt}
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover"
               initial={reduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -124,7 +126,9 @@ const TransformCard = ({
             <motion.img
               key="after"
               src={after}
-              alt={`After ${label}`}
+              alt={afterAlt}
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover"
               initial={reduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -139,6 +143,29 @@ const TransformCard = ({
         <span className="absolute bottom-3 left-3 text-xs font-semibold text-white bg-black/55 px-2 py-1 rounded z-10">
           {showBefore ? "Before" : "After"}
         </span>
+
+        {/* Animated tap-to-compare hint (first card only, auto-dismisses) */}
+        <AnimatePresence>
+          {showTapHint ? (
+            <motion.div
+              key="tap-hint"
+              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-x-0 top-3 flex justify-center pointer-events-none z-20"
+            >
+              <span
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-foreground/85 text-background text-xs font-semibold shadow-lg ${
+                  reduceMotion ? "" : "animate-pulse"
+                }`}
+              >
+                <Hand className="w-3.5 h-3.5" aria-hidden />
+                Tap to compare
+              </span>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
 
         {/* Hover/tap ripple hint overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/8 group-active:bg-black/15 transition-colors duration-200 z-10" />
