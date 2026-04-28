@@ -1,6 +1,14 @@
 import { motion } from "framer-motion";
+import { Award, Users, Star, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMotionReduced } from "@/lib/motionReduced";
+
+const trustBadges = [
+  { icon: Award, label: "12+ Years" },
+  { icon: Users, label: "500+ Patients" },
+  { icon: Star, label: "Google 4.9★" },
+  { icon: ShieldCheck, label: "Sterilization Certified" },
+];
 
 const HeroSection = () => {
   const { instant, reduceMotion } = useMotionReduced();
@@ -58,6 +66,27 @@ const HeroSection = () => {
               <a href="#services">View Our Services</a>
             </Button>
           </div>
+
+          {/* Trust strip */}
+          <motion.ul
+            initial={instant ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              reduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.4 }
+            }
+            className="mt-10 hidden sm:flex flex-wrap items-center justify-center gap-2.5"
+            aria-label="Trust indicators"
+          >
+            {trustBadges.map((b) => (
+              <li
+                key={b.label}
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm text-white/90"
+              >
+                <b.icon className="w-4 h-4 text-primary" aria-hidden />
+                <span className="font-medium">{b.label}</span>
+              </li>
+            ))}
+          </motion.ul>
         </motion.div>
       </div>
     </section>
