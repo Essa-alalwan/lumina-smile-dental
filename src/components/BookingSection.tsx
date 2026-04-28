@@ -366,7 +366,11 @@ const BookingSection = () => {
                 <button
                   key={`${slot.time}-${i}`}
                   type="button"
-                  onClick={() => slot.available && setSelectedSlot(slot.time)}
+                  onClick={() => {
+                    if (!slot.available) return;
+                    setSelectedSlot(slot.time);
+                    setSlotError(null);
+                  }}
                   disabled={!slot.available}
                   className={cn(
                     "flex items-center gap-3 p-4 rounded-xl border text-start transition-all min-h-[44px]",
@@ -388,6 +392,11 @@ const BookingSection = () => {
                 </button>
               ))}
             </div>
+            {slotError ? (
+              <p className="mt-3 text-sm text-destructive" role="alert">
+                {slotError}
+              </p>
+            ) : null}
           </div>
 
           {/* Booking form */}
@@ -430,6 +439,7 @@ const BookingSection = () => {
                   type="tel"
                   autoComplete="tel"
                   inputMode="tel"
+                  placeholder="+973 XXXX XXXX"
                   value={phone}
                   onChange={(e) => {
                     setPhone(e.target.value);
@@ -438,14 +448,20 @@ const BookingSection = () => {
                   onBlur={() => validatePhoneField(phone)}
                   required
                   aria-invalid={phoneError ? true : undefined}
-                  aria-describedby={phoneError ? `${phoneId}-error` : undefined}
+                  aria-describedby={
+                    phoneError ? `${phoneId}-error` : `${phoneId}-hint`
+                  }
                   className="rounded-lg min-h-[44px]"
                 />
                 {phoneError ? (
                   <p id={`${phoneId}-error`} className="text-sm text-destructive" role="alert">
                     {phoneError}
                   </p>
-                ) : null}
+                ) : (
+                  <p id={`${phoneId}-hint`} className="text-xs text-muted-foreground">
+                    Format: +973 XXXX XXXX
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
