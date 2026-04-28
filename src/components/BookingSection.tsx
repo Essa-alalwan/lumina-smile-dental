@@ -107,6 +107,7 @@ const BookingSection = () => {
   const [emailError, setEmailError] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [serviceError, setServiceError] = useState<string | null>(null);
+  const [slotError, setSlotError] = useState<string | null>(null);
 
   const weekDays = useMemo(() => {
     const ws = startOfWeek(selectedDate, { weekStartsOn: 1 });
@@ -139,7 +140,7 @@ const BookingSection = () => {
       return;
     }
     if (!isValidPhone(value)) {
-      setPhoneError("Enter a valid phone number (at least 10 digits).");
+      setPhoneError("Enter a valid phone (e.g. +973 XXXX XXXX).");
       return;
     }
     setPhoneError(null);
@@ -167,7 +168,7 @@ const BookingSection = () => {
       setPhoneError("Phone number is required.");
       ok = false;
     } else if (!isValidPhone(phone)) {
-      setPhoneError("Enter a valid phone number (at least 10 digits).");
+      setPhoneError("Enter a valid phone (e.g. +973 XXXX XXXX).");
       ok = false;
     } else {
       setPhoneError(null);
@@ -177,6 +178,12 @@ const BookingSection = () => {
       ok = false;
     } else {
       setServiceError(null);
+    }
+    if (!selectedSlot) {
+      setSlotError("Please choose a time slot.");
+      ok = false;
+    } else {
+      setSlotError(null);
     }
     if (!ok) return;
 
