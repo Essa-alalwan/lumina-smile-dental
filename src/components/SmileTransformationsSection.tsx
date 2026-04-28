@@ -15,32 +15,26 @@ const transformations = [
   {
     label: "Porcelain Veneers",
     note: "8 veneers, completed in 2 visits",
-    emotion: "Regain confidence in your smile",
     before: beforeVeneers,
     after: afterVeneers,
     beforeAlt: "Before — discolored, uneven upper teeth with visible gaps",
     afterAlt: "After porcelain veneers — natural, aligned, brighter smile",
-    hint: "Tap to see what we started with",
   },
   {
     label: "Professional Whitening",
     note: "6 shades brighter in a single session",
-    emotion: "Smile without holding back",
     before: beforeWhitening,
     after: afterWhitening,
     beforeAlt: "Before whitening — yellowed, stained teeth from coffee and time",
     afterAlt: "After whitening — visibly brighter, healthier-looking teeth",
-    hint: "Tap to reveal the before",
   },
   {
     label: "Smile Design",
     note: "Full digital smile makeover plan",
-    emotion: "Love the way you look again",
     before: beforeSmileDesign,
     after: afterSmileDesign,
     beforeAlt: "Before smile design — worn, uneven, slightly crowded teeth",
     afterAlt: "After smile design — clean, balanced, confident smile",
-    hint: "Tap to see the transformation",
   },
 ];
 
@@ -49,8 +43,6 @@ interface TransformCardProps {
   after: string;
   label: string;
   note: string;
-  emotion: string;
-  hint: string;
   beforeAlt: string;
   afterAlt: string;
   index: number;
@@ -62,8 +54,6 @@ const TransformCard = ({
   after,
   label,
   note,
-  emotion,
-  hint,
   beforeAlt,
   afterAlt,
   index,
@@ -78,9 +68,6 @@ const TransformCard = ({
     const t = setTimeout(() => setShowTapHint(false), 4000);
     return () => clearTimeout(t);
   }, [showTapHint]);
-
-  const scrollToBooking = () =>
-    document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
 
   const handleToggle = () => {
     setShowBefore((v) => !v);
@@ -98,7 +85,7 @@ const TransformCard = ({
       {/* Subtle hint above image */}
       <div className="flex items-center justify-center gap-1.5 py-2 px-4 bg-accent/5 border-b border-accent/10">
         <span className="text-[11px] text-accent/70 font-medium tracking-wide">
-          {showBefore ? "👆 Tap to see the result" : hint}
+          {showBefore ? "Tap to see the result" : "Tap to see where we started"}
         </span>
       </div>
 
@@ -172,29 +159,16 @@ const TransformCard = ({
       </div>
 
       {/* Card body */}
-      <div className="p-4 text-center space-y-3 flex flex-col flex-1">
+      <div className="p-4 text-center space-y-2 flex flex-col flex-1">
         <p className="text-sm font-semibold text-foreground">{label}</p>
         <p className="text-xs text-muted-foreground">{note}</p>
-        <p className="text-sm italic text-accent font-medium">"{emotion}"</p>
 
-        {/* Toggle button */}
         <button
           onClick={handleToggle}
-          className="text-xs text-accent underline underline-offset-2 hover:text-accent/70 transition-colors"
+          className="text-xs text-accent underline underline-offset-2 hover:text-accent/70 transition-colors mt-1"
         >
           {showBefore ? "← See the result" : "See where we started →"}
         </button>
-
-        {/* Primary CTA — glowing */}
-        <div className="pt-1">
-          <Button
-            size="sm"
-            className="w-full relative shadow-[0_0_14px_2px_hsl(var(--accent)/0.35)] hover:shadow-[0_0_22px_4px_hsl(var(--accent)/0.5)] transition-shadow duration-300"
-            onClick={scrollToBooking}
-          >
-            Get This Result Now →
-          </Button>
-        </div>
       </div>
     </motion.div>
   );
