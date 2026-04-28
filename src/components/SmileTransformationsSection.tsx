@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Hand } from "lucide-react";
 import { useMotionReduced } from "@/lib/motionReduced";
 import { Button } from "@/components/ui/button";
 
@@ -17,6 +18,8 @@ const transformations = [
     emotion: "Regain confidence in your smile",
     before: beforeVeneers,
     after: afterVeneers,
+    beforeAlt: "Before — discolored, uneven upper teeth with visible gaps",
+    afterAlt: "After porcelain veneers — natural, aligned, brighter smile",
     hint: "Tap to see what we started with",
   },
   {
@@ -25,6 +28,8 @@ const transformations = [
     emotion: "Smile without holding back",
     before: beforeWhitening,
     after: afterWhitening,
+    beforeAlt: "Before whitening — yellowed, stained teeth from coffee and time",
+    afterAlt: "After whitening — visibly brighter, healthier-looking teeth",
     hint: "Tap to reveal the before",
   },
   {
@@ -33,6 +38,8 @@ const transformations = [
     emotion: "Love the way you look again",
     before: beforeSmileDesign,
     after: afterSmileDesign,
+    beforeAlt: "Before smile design — worn, uneven, slightly crowded teeth",
+    afterAlt: "After smile design — clean, balanced, confident smile",
     hint: "Tap to see the transformation",
   },
 ];
@@ -44,6 +51,8 @@ interface TransformCardProps {
   note: string;
   emotion: string;
   hint: string;
+  beforeAlt: string;
+  afterAlt: string;
   index: number;
   reduceMotion: boolean;
 }
@@ -55,14 +64,28 @@ const TransformCard = ({
   note,
   emotion,
   hint,
+  beforeAlt,
+  afterAlt,
   index,
   reduceMotion,
 }: TransformCardProps) => {
   // Show "after" by default — best foot forward
   const [showBefore, setShowBefore] = useState(false);
+  const [showTapHint, setShowTapHint] = useState(index === 0);
+
+  useEffect(() => {
+    if (!showTapHint) return;
+    const t = setTimeout(() => setShowTapHint(false), 4000);
+    return () => clearTimeout(t);
+  }, [showTapHint]);
 
   const scrollToBooking = () =>
     document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" });
+
+  const handleToggle = () => {
+    setShowBefore((v) => !v);
+    setShowTapHint(false);
+  };
 
   return (
     <motion.div
